@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operación Tierra Firme</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #111;
+        }
+
+        /* Contenedor del fondo con la imagen de agua */
+        .background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('fondo-agua.jfif') no-repeat center center fixed;
+            background-size: cover;
+            z-index: 1;
+        }
+
+        /* Filtro oscuro sobre el agua para que el texto sea legible */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        /* Contenedor principal del texto */
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card {
+            /* Azul marino muy oscuro */
+            background: rgba(4, 15, 36, 0.9);
+            padding: 40px 20px;
+            border-radius: 16px;
+            max-width: 95%;
+            width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Contenedor del reloj */
+        #timer {
+            display: flex;
+            flex-wrap: nowrap; /* Fuerzo a que siempre sea una sola fila */
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Estilo de la ficha */
+        .digit-container {
+            background-color: #020813; /* Aún más oscuro para la ficha */
+            color: #fff;
+            padding: 15px 10px;
+            border-radius: 8px;
+            font-size: 3.2rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1);
+            position: relative;
+            perspective: 1000px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Línea horizontal que corta la ficha al medio */
+        .digit-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 5;
+            margin-top: -1px;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #8da4c8; /* Un celeste grisáceo para que contraste lindo con el azul */
+            font-weight: 600;
+        }
+
+        /* Animación de la ficha cayendo */
+        .flip .digit {
+            display: inline-block;
+            animation: flipAnim 0.6s ease-in-out;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes flipAnim {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(-90deg); opacity: 0.5; }
+            50.1% { transform: rotateX(90deg); opacity: 0.5; }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .frase {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .comparacion {
+            font-size: 1rem;
+            font-style: italic;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        /* Pantalla final oculta por defecto */
+        #pantalla-final {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('nicole.jfif') no-repeat center center;
+            background-size: cover;
+            z-index: 9999;
+        }
+
+        /* Aseguramos que entre perfecto en pantallas muy chicas (iPhone SE) */
+        @media (max-width: 400px) {
+            #timer { gap: 10px; }
+            .digit-container { font-size: 2.4rem; min-width: 65px; padding: 12px 5px; }
+            .label { font-size: 0.7rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background">
+        <div class="overlay"></div>
+    </div>
+
+    <div class="content" id="contenedor-principal">
+        <div class="card">
+            <h1>¿Cuánto falta?</h1>
+            
+            <div id="timer">
+                <div class="time-block">
+                    <div class="digit-container" id="container-dias">
+                        <span class="digit" id="val-dias">00</span>
+                    </div>
+                    <span class="label">Días</span>
+                </div>
+                <div class="time-block">
+                    <div class="digit-container" id="container-horas">
+                        <span class="digit" id="val-horas">00</span>
+                    </div>
+                    <span class="label">Horas</span>
+                </div>
+                <div class="time-block">
+                    <div class="digit-container" id="container-minutos">
+                        <span class="digit" id="val-minutos">00</span>
+                    </div>
+                    <span class="label">Minutos</span>
+                </div>
+            </div>
+
+            <div class="frase" id="texto-frase"></div>
+            <div class="comparacion" id="texto-comparacion"></div>
+        </div>
+    </div>
+
+    <div id="pantalla-final"></div>
+
+    <script>
+        //const targetDate = new Date("2026-09-24T00:01:00").getTime();
+        const targetDate = new Date().getTime() + 5000; // 5000 milisegundos = 5 segundos
+        const mensajes = {
+            17: { f: "Aguantá un poco más, ya pasaste lo peor.", c: "Te falta el equivalente a ver la película Titanic 125 veces seguidas." },
+            16: { f: "Un día menos tachado en la pared del camarote.", c: "Es lo que te tomaría caminar desde el Obelisco hasta Mar del Plata casi 5 veces sin parar." },
+            15: { f: "Ya casi entramos en las últimas dos semanas. Mantené la cordura.", c: "Es el tiempo matemático que tardarías en ver las 9 temporadas de The Office completas casi 5 veces." },
+            14: { f: "Solo dos semanas. Esto ya es la recta final.", c: "Son 20.160 minutos. El tiempo exacto que te llevaría hervir 2.016 huevos duros." },
+            13: { f: "Ojos en el premio. La tierra firme te espera.", c: "Falta la cantidad de horas que te tomaría maratonear la trilogía extendida de El Señor de los Anillos 27 veces al hilo." },
+            12: { f: "No te dejes ganar por la ansiedad marítima.", c: "Es el tiempo que lleva hacer el viaje en micro de Retiro a Bariloche 13 veces seguidas sin bajarte en ninguna parada." },
+            11: { f: "Ya estás del otro lado.", c: "Faltan 264 horas, el tiempo justo para reproducir la saga de las 8 películas de Harry Potter 13 veces sin pausas." },
+            10: { f: "Entramos en los últimos diez días. Se festeja.", c: "Es más de lo que duró la misión entera del Apolo 11. Podrías ir a la Luna, volver, y te sobrarían 45 horas de viaje." },
+            9:  { f: "Un dígito. Ya podés ir armando la valija mentalmente.", c: "Son 216 horas. El tiempo exacto que te tomaría jugar 144 partidos de fútbol de 90 minutos uno atrás del otro." },
+            8:  { f: "Que la locura del barco no te alcance, falta nada.", c: "Faltan 192 horas, lo que tardarías en escuchar toda la discografía de estudio de Los Beatles 19 veces." },
+            7:  { f: "¡Una semana! Se cuenta con los dedos de las manos.", c: "Estás a 168 horas. El tiempo que tarda el Buquebus lento a Colonia, sumando el viaje de ida y de vuelta, hecho 28 veces." },
+            6:  { f: "Ya casi podés oler la comida de verdad.", c: "Te faltan 144 horas. Exactamente el tiempo que necesitarías para hornear 288 bizcochuelos consecutivos, de a media hora cada uno." },
+            5:  { f: "Sobreviviste hasta acá. No aflojes ahora.", c: "Falta el equivalente a escuchar la canción 'Bohemian Rhapsody' 1.216 veces seguidas." },
+            4:  { f: "Es un suspiro. Ya casi estás.", c: "Son 96 horas. Lo que te tomaría cursar 48 clases de la facultad de dos horas cada una, sin un solo recreo." },
+            3:  { f: "La puerta de salida ya está a la vista.", c: "72 horas es el tiempo físico que te llevaría caminar 8 maratones y media de 42 kilómetros." },
+            2:  { f: "Mañana es tu último día completo. Respirá.", c: "Son 48 horas exactas. El tiempo que tarda la Estación Espacial Internacional en darle 32 vueltas completas a la Tierra." },
+            1:  { f: "Prepará el bolso. Mañana sos libre.", c: "Faltan 24 horas. Lo que tarda la Tierra en dar una última vuelta sobre su propio eje, y te bajás." }
+        };
+
+        const fraseEl = document.getElementById('texto-frase');
+        const comparacionEl = document.getElementById('texto-comparacion');
+        const contenedorPrincipal = document.getElementById('contenedor-principal');
+        const pantallaFinal = document.getElementById('pantalla-final');
+
+        // Variables para guardar el estado anterior y saber cuándo animar
+        let lastDias = -1;
+        let lastHoras = -1;
+        let lastMinutos = -1;
+
+        function animarFicha(idContainer, idVal, nuevoValor) {
+            const container = document.getElementById(idContainer);
+            const span = document.getElementById(idVal);
+            
+            // Si el valor no cambió, no hacemos nada
+            if (span.innerText === nuevoValor) return;
+
+            // Reiniciamos la animación sacando y poniendo la clase
+            container.classList.remove('flip');
+            void container.offsetWidth; // Forzar un "reflow" para que el navegador reinicie la animación CSS
+            
+            // Actualizamos el número y disparamos la animación
+            span.innerText = nuevoValor;
+            container.classList.add('flip');
+        }
+
+        function actualizarContador() {
+            const ahora = new Date().getTime();
+            const distancia = targetDate - ahora;
+
+            if (distancia <= 0) {
+                contenedorPrincipal.style.display = 'none';
+                document.querySelector('.background').style.display = 'none';
+                pantallaFinal.style.display = 'block';
+                return;
+            }
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+
+            const strDias = dias < 10 ? '0' + dias : dias.toString();
+            const strHoras = horas < 10 ? '0' + horas : horas.toString();
+            const strMinutos = minutos < 10 ? '0' + minutos : minutos.toString();
+
+            // Animamos solo las fichas que cambien de número
+            if (dias !== lastDias) { animarFicha('container-dias', 'val-dias', strDias); lastDias = dias; }
+            if (horas !== lastHoras) { animarFicha('container-horas', 'val-horas', strHoras); lastHoras = horas; }
+            if (minutos !== lastMinutos) { animarFicha('container-minutos', 'val-minutos', strMinutos); lastMinutos = minutos; }
+
+            let diaActual = Math.ceil(distancia / (1000 * 60 * 60 * 24));
+            if (diaActual > 17) diaActual = 17;
+            if (diaActual < 1) diaActual = 1;
+
+            const contenido = mensajes[diaActual];
+            if (fraseEl.innerText !== contenido.f) {
+                fraseEl.innerText = contenido.f;
+                comparacionEl.innerText = contenido.c;
+            }
+        }
+
+        // Llamamos cada segundo para verificar si cambió el minuto
+        setInterval(actualizarContador, 1000);
+        actualizarContador();
+    </script>
+</body>
+</html>
