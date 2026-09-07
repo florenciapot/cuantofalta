@@ -26,14 +26,14 @@
             z-index: 1;
         }
 
-        /* Filtro oscuro sobre el agua para que el texto sea legible */
+        /* Filtro oscuro sobre el agua para legibilidad */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.45);
         }
 
-        /* Contenedor principal del texto */
+        /* Contenedor principal */
         .content {
             position: relative;
             z-index: 2;
@@ -48,7 +48,6 @@
         }
 
         .card {
-            /* Azul marino muy oscuro */
             background: rgba(4, 15, 36, 0.9);
             padding: 40px 20px;
             border-radius: 16px;
@@ -70,7 +69,7 @@
         /* Contenedor del reloj */
         #timer {
             display: flex;
-            flex-wrap: nowrap; /* Fuerzo a que siempre sea una sola fila */
+            flex-wrap: nowrap;
             justify-content: center;
             gap: 15px;
             margin-bottom: 35px;
@@ -85,7 +84,7 @@
 
         /* Estilo de la ficha */
         .digit-container {
-            background-color: #020813; /* Aún más oscuro para la ficha */
+            background-color: #020813;
             color: #fff;
             padding: 15px 10px;
             border-radius: 8px;
@@ -99,7 +98,7 @@
             text-align: center;
         }
 
-        /* Línea horizontal que corta la ficha al medio */
+        /* Línea horizontal central */
         .digit-container::after {
             content: '';
             position: absolute;
@@ -116,11 +115,11 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #8da4c8; /* Un celeste grisáceo para que contraste lindo con el azul */
+            color: #8da4c8;
             font-weight: 600;
         }
 
-        /* Animación de la ficha cayendo */
+        /* Animación de giro de ficha */
         .flip .digit {
             display: inline-block;
             animation: flipAnim 0.6s ease-in-out;
@@ -148,7 +147,7 @@
             line-height: 1.5;
         }
 
-        /* Pantalla final oculta por defecto */
+        /* Pantalla final */
         #pantalla-final {
             display: none;
             position: fixed;
@@ -158,7 +157,6 @@
             z-index: 9999;
         }
 
-        /* Aseguramos que entre perfecto en pantallas muy chicas (iPhone SE) */
         @media (max-width: 400px) {
             #timer { gap: 10px; }
             .digit-container { font-size: 2.4rem; min-width: 65px; padding: 12px 5px; }
@@ -207,23 +205,24 @@
 
     <script>
         const targetDate = new Date("2026-09-24T00:01:00").getTime();
+
         const mensajes = {
-            17: { f: "Aguantá un poco más, ya pasaste lo peor.", c: "Te falta el equivalente a ver la película Titanic 125 veces seguidas." },
-            16: { f: "Un día menos tachado en la pared del camarote.", c: "Es lo que te tomaría caminar desde el Obelisco hasta Mar del Plata casi 5 veces sin parar." },
+            17: { f: "Aguantá un poco más, ya pasaste lo peor.", c: "Te falta el equivalente a ver la película Titanic 125 veces seguidas, pero esta vez sí te bajás del barco." },
+            16: { f: "Un día menos tachado en la pared del camarote.", c: "Son 384 horas. El tiempo exacto que te tomaría hacer maratón de todas las temporadas de Friends 4 veces y media." },
             15: { f: "Ya casi entramos en las últimas dos semanas. Mantené la cordura.", c: "Es el tiempo matemático que tardarías en ver las 9 temporadas de The Office completas casi 5 veces." },
             14: { f: "Solo dos semanas. Esto ya es la recta final.", c: "Son 20.160 minutos. El tiempo exacto que te llevaría hervir 2.016 huevos duros." },
             13: { f: "Ojos en el premio. La tierra firme te espera.", c: "Falta la cantidad de horas que te tomaría maratonear la trilogía extendida de El Señor de los Anillos 27 veces al hilo." },
-            12: { f: "No te dejes ganar por la ansiedad marítima.", c: "Es el tiempo que lleva hacer el viaje en micro de Retiro a Bariloche 13 veces seguidas sin bajarte en ninguna parada." },
+            12: { f: "No te dejes ganar por la ansiedad marítima.", c: "Faltan 288 horas. Si te sentás a ver toda la saga completa de Star Wars, la terminarías de ver 11 veces y media." },
             11: { f: "Ya estás del otro lado.", c: "Faltan 264 horas, el tiempo justo para reproducir la saga de las 8 películas de Harry Potter 13 veces sin pausas." },
-            10: { f: "Entramos en los últimos diez días. Se festeja.", c: "Es más de lo que duró la misión entera del Apolo 11. Podrías ir a la Luna, volver, y te sobrarían 45 horas de viaje." },
-            9:  { f: "Un dígito. Ya podés ir armando la valija mentalmente.", c: "Son 216 horas. El tiempo exacto que te tomaría jugar 144 partidos de fútbol de 90 minutos uno atrás del otro." },
+            10: { f: "Entramos en los últimos diez días. Se festeja.", c: "Son 240 horas. Exactamente el tiempo que te tomaría escuchar la canción Despacito 3.790 veces al hilo." },
+            9:  { f: "Un dígito. Ya podés ir armando la valija mentalmente.", c: "Son 216 horas. Lo que te tomaría hacer 432 lavados en el lavarropas usando un ciclo rápido de media hora." },
             8:  { f: "Que la locura del barco no te alcance, falta nada.", c: "Faltan 192 horas, lo que tardarías en escuchar toda la discografía de estudio de Los Beatles 19 veces." },
             7:  { f: "¡Una semana! Se cuenta con los dedos de las manos.", c: "Estás a 168 horas. El tiempo que tarda el Buquebus lento a Colonia, sumando el viaje de ida y de vuelta, hecho 28 veces." },
-            6:  { f: "Ya casi podés oler la comida de verdad.", c: "Te faltan 144 horas. Exactamente el tiempo que necesitarías para hornear 288 bizcochuelos consecutivos, de a media hora cada uno." },
+            6:  { f: "Ya casi podés oler la comida de verdad.", c: "Te faltan 144 horas. Exactamente el tiempo que necesitarías para hornear 288 bizcochuelos consecutivos." },
             5:  { f: "Sobreviviste hasta acá. No aflojes ahora.", c: "Falta el equivalente a escuchar la canción 'Bohemian Rhapsody' 1.216 veces seguidas." },
             4:  { f: "Es un suspiro. Ya casi estás.", c: "Son 96 horas. Lo que te tomaría cursar 48 clases de la facultad de dos horas cada una, sin un solo recreo." },
-            3:  { f: "La puerta de salida ya está a la vista.", c: "72 horas es el tiempo físico que te llevaría caminar 8 maratones y media de 42 kilómetros." },
-            2:  { f: "Mañana es tu último día completo. Respirá.", c: "Son 48 horas exactas. El tiempo que tarda la Estación Espacial Internacional en darle 32 vueltas completas a la Tierra." },
+            3:  { f: "La puerta de salida ya está a la vista.", c: "Son 72 horas. Lo que te tomaría calentar 1.440 empanadas en el microondas calculando tres minutos por tanda." },
+            2:  { f: "Mañana es tu último día completo. Respirá.", c: "Son 48 horas exactas. El tiempo que te tomaría pedir y recibir 64 deliveries de pizza calculando 45 minutos de demora por pedido." },
             1:  { f: "Prepará el bolso. Mañana sos libre.", c: "Faltan 24 horas. Lo que tarda la Tierra en dar una última vuelta sobre su propio eje, y te bajás." }
         };
 
@@ -232,7 +231,6 @@
         const contenedorPrincipal = document.getElementById('contenedor-principal');
         const pantallaFinal = document.getElementById('pantalla-final');
 
-        // Variables para guardar el estado anterior y saber cuándo animar
         let lastDias = -1;
         let lastHoras = -1;
         let lastMinutos = -1;
@@ -241,14 +239,11 @@
             const container = document.getElementById(idContainer);
             const span = document.getElementById(idVal);
             
-            // Si el valor no cambió, no hacemos nada
             if (span.innerText === nuevoValor) return;
 
-            // Reiniciamos la animación sacando y poniendo la clase
             container.classList.remove('flip');
-            void container.offsetWidth; // Forzar un "reflow" para que el navegador reinicie la animación CSS
+            void container.offsetWidth;
             
-            // Actualizamos el número y disparamos la animación
             span.innerText = nuevoValor;
             container.classList.add('flip');
         }
@@ -272,7 +267,6 @@
             const strHoras = horas < 10 ? '0' + horas : horas.toString();
             const strMinutos = minutos < 10 ? '0' + minutos : minutos.toString();
 
-            // Animamos solo las fichas que cambien de número
             if (dias !== lastDias) { animarFicha('container-dias', 'val-dias', strDias); lastDias = dias; }
             if (horas !== lastHoras) { animarFicha('container-horas', 'val-horas', strHoras); lastHoras = horas; }
             if (minutos !== lastMinutos) { animarFicha('container-minutos', 'val-minutos', strMinutos); lastMinutos = minutos; }
@@ -288,7 +282,6 @@
             }
         }
 
-        // Llamamos cada segundo para verificar si cambió el minuto
         setInterval(actualizarContador, 1000);
         actualizarContador();
     </script>
